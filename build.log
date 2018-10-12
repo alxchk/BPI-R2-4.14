@@ -7,3 +7,9 @@ arch/arm/boot/dts/mt7623n-bananapi-bpi-r2.dtb: Warning (avoid_default_addr_size)
 arch/arm/boot/dts/mt7623n-bananapi-bpi-r2.dtb: Warning (avoid_default_addr_size): /dpi@14014000/ports/port@0: Relying on default #size-cells value
 arch/arm/boot/dts/mt7623n-bananapi-bpi-r2.dtb: Warning (avoid_default_addr_size): /dpi@14014000/ports/port@1: Relying on default #address-cells value
 arch/arm/boot/dts/mt7623n-bananapi-bpi-r2.dtb: Warning (avoid_default_addr_size): /dpi@14014000/ports/port@1: Relying on default #size-cells value
+drivers/gpu/drm/mediatek/mtk_drm_drv.c:205:15: warning: initialization discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
+  .main_path = mt2712_mtk_ddp_main,
+               ^~~~~~~~~~~~~~~~~~~
+drivers/gpu/drm/mediatek/mtk_drm_drv.c:207:14: warning: initialization discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
+  .ext_path = mt2712_mtk_ddp_ext,
+              ^~~~~~~~~~~~~~~~~~
