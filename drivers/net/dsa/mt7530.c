@@ -1349,17 +1349,17 @@ mt7530_probe(struct platform_device *mdiodev)
 {
 	struct mt7530_priv *priv;
 	struct device_node *dn, *mdio;
-
+printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	dn = mdiodev->dev.of_node;
-
+printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	priv = devm_kzalloc(&mdiodev->dev, sizeof(*priv), GFP_KERNEL);
 	if (!priv)
 		return -ENOMEM;
-
+printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	priv->ds = dsa_switch_alloc(&mdiodev->dev, DSA_MAX_PORTS);
 	if (!priv->ds)
 		return -ENOMEM;
-
+printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	/* Use medatek,mcm property to distinguish hardware type that would
 	 * casues a little bit differences on power-on sequence.
 	 */
@@ -1373,15 +1373,15 @@ mt7530_probe(struct platform_device *mdiodev)
 			return PTR_ERR(priv->rstc);
 		}
 	}
-
+printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	priv->core_pwr = devm_regulator_get(&mdiodev->dev, "core");
 	if (IS_ERR(priv->core_pwr))
 		return PTR_ERR(priv->core_pwr);
-
+printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	priv->io_pwr = devm_regulator_get(&mdiodev->dev, "io");
 	if (IS_ERR(priv->io_pwr))
 		return PTR_ERR(priv->io_pwr);
-
+printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	/* Not MCM that indicates switch works as the remote standalone
 	 * integrated circuit so the GPIO pin would be used to complete
 	 * the reset, otherwise memory-mapped register accessing used
@@ -1395,7 +1395,7 @@ mt7530_probe(struct platform_device *mdiodev)
 			return PTR_ERR(priv->reset);
 		}
 	}
-
+printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	mdio = of_parse_phandle(dn, "dsa,mii-bus", 0);
 	if (!mdio)
 		return -EINVAL;
@@ -1407,7 +1407,7 @@ mt7530_probe(struct platform_device *mdiodev)
 	priv->ds->ops = &mt7530_switch_ops;
 	mutex_init(&priv->reg_mutex);
 	dev_set_drvdata(&mdiodev->dev, priv);
-
+printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	return dsa_register_switch(priv->ds);
 }
 

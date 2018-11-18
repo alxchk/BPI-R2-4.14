@@ -1,1 +1,5 @@
 <stdin>:1332:2: warning: #warning syscall io_pgetevents not implemented [-Wcpp]
+net/dsa/dsa2.c: In function 'dsa_port_parse_of':
+net/dsa/dsa2.c:651:2: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+  struct device_node *ethernet = of_parse_phandle(dn, "ethernet", 0);
+  ^~~~~~
