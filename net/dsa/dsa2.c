@@ -262,12 +262,17 @@ static int dsa_user_parse(struct dsa_port *port, u32 index,
 	const unsigned int *cpu_port_reg;
 	int cpu_port_index;
 	cpu_port = of_parse_phandle(port->dn, "cpu", 0);
+printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
+	printk("[DSA] port \"%s\"\n",port->dn->name);
+	printk("[DSA] cpu_port \"%s\"\n",cpu_port->name);
 	if (cpu_port) {
 		cpu_port_reg = of_get_property(cpu_port, "reg", NULL);
+	printk("[DSA] cpu-port_reg \"%u\"\n",*cpu_port_reg);
 		if (!cpu_port_reg)
 			return -EINVAL;
 		cpu_port_index = be32_to_cpup(cpu_port_reg);
 		ds->ports[index].upstream = cpu_port_index;
+	printk("[DSA] cpu_port_index \"%d\"\n",cpu_port_index);
 	}
 	return 0;
 }
@@ -276,6 +281,7 @@ static int dsa_port_setup(struct dsa_port *dp)
 {
 	struct dsa_switch *ds = dp->ds;
 	int err = 0;
+printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 
 	memset(&dp->devlink_port, 0, sizeof(dp->devlink_port));
 
@@ -285,6 +291,7 @@ static int dsa_port_setup(struct dsa_port *dp)
 	if (err)
 		return err;
 
+printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d (pre-switch type) \n",__FUNCTION__,__LINE__);
 	switch (dp->type) {
 	case DSA_PORT_TYPE_UNUSED:
 		break;
@@ -321,6 +328,7 @@ static int dsa_port_setup(struct dsa_port *dp)
 		}
 		break;
 	case DSA_PORT_TYPE_USER:
+printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d (DSA_PORT_TYPE_USER) \n",__FUNCTION__,__LINE__);
 		devlink_port_attrs_set(&dp->devlink_port,
 				       DEVLINK_PORT_FLAVOUR_PHYSICAL,
 				       dp->index, false, 0);
@@ -331,6 +339,7 @@ static int dsa_port_setup(struct dsa_port *dp)
 		else
 			devlink_port_type_eth_set(&dp->devlink_port, dp->slave);
 
+printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d (pre-dsa_user_parse) \n",__FUNCTION__,__LINE__);
 		err = dsa_user_parse(dp, dp->index, ds);
 		if (err)
 			return err;
