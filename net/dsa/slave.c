@@ -1298,10 +1298,9 @@ int dsa_slave_create(struct dsa_port *port)
 	const char *name = port->name;
 	struct net_device *slave_dev;
 	struct dsa_slave_priv *p;
-printk(KERN_ALERT "DEBUG: Passed %s %d i:%d\n",__FUNCTION__,__LINE__,port->upstream);
 	struct net_device *master = ds->ports[port->upstream].ethernet;
 	int ret;
-printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
+
 	if (!ds->num_tx_queues)
 		ds->num_tx_queues = 1;
 
@@ -1310,34 +1309,26 @@ printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 				     ds->num_tx_queues, 1);
 	if (slave_dev == NULL)
 		return -ENOMEM;
-printk(KERN_ALERT "DEBUG: Passed %s %d (s:0x%x m:0x%x)\n",__FUNCTION__,__LINE__,(unsigned int)slave_dev,(unsigned int)master);
+
 	slave_dev->features = master->vlan_features | NETIF_F_HW_TC;
 	slave_dev->hw_features |= NETIF_F_HW_TC;
-printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	slave_dev->ethtool_ops = &dsa_slave_ethtool_ops;
-printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	eth_hw_addr_inherit(slave_dev, master);
-printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	slave_dev->priv_flags |= IFF_NO_QUEUE;
-printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	slave_dev->netdev_ops = &dsa_slave_netdev_ops;
-printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	slave_dev->switchdev_ops = &dsa_slave_switchdev_ops;
-printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	slave_dev->min_mtu = 0;
 	slave_dev->max_mtu = ETH_MAX_MTU;
 	SET_NETDEV_DEVTYPE(slave_dev, &dsa_type);
 
-printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	netdev_for_each_tx_queue(slave_dev, dsa_slave_set_lockdep_class_one,
 				 NULL);
-printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
+
 	SET_NETDEV_DEV(slave_dev, port->ds->dev);
 	slave_dev->dev.of_node = port->dn;
 	slave_dev->vlan_features = master->vlan_features;
-printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
+
 	p = netdev_priv(slave_dev);
-printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	p->stats64 = netdev_alloc_pcpu_stats(struct pcpu_sw_netstats);
 	if (!p->stats64) {
 		free_netdev(slave_dev);

@@ -262,17 +262,12 @@ static int dsa_user_parse(struct dsa_port *port, u32 index,
 	const unsigned int *cpu_port_reg;
 	int cpu_port_index;
 	cpu_port = of_parse_phandle(port->dn, "cpu", 0);
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
-	printk("[DSA] port \"%s\"\n",port->dn->name);
-	printk("[DSA] cpu_port \"%s\"\n",cpu_port->name);
 	if (cpu_port) {
 		cpu_port_reg = of_get_property(cpu_port, "reg", NULL);
-	printk("[DSA] cpu-port_reg \"%u\"\n",*cpu_port_reg);
 		if (!cpu_port_reg)
 			return -EINVAL;
 		cpu_port_index = be32_to_cpup(cpu_port_reg);
 		ds->ports[index].upstream = cpu_port_index;
-	printk("[DSA] cpu_port_index \"%d\"\n",cpu_port_index);
 	}
 	return 0;
 }
@@ -281,7 +276,6 @@ static int dsa_port_setup(struct dsa_port *dp)
 {
 	struct dsa_switch *ds = dp->ds;
 	int err = 0;
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 
 	memset(&dp->devlink_port, 0, sizeof(dp->devlink_port));
 
@@ -291,7 +285,6 @@ printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	if (err)
 		return err;
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d (pre-switch type) \n",__FUNCTION__,__LINE__);
 	switch (dp->type) {
 	case DSA_PORT_TYPE_UNUSED:
 		break;
@@ -328,16 +321,13 @@ printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d (pre-switch type) \n",__FUNCTION__,
 		}
 		break;
 	case DSA_PORT_TYPE_USER:
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d (DSA_PORT_TYPE_USER) \n",__FUNCTION__,__LINE__);
 		devlink_port_attrs_set(&dp->devlink_port,
 				       DEVLINK_PORT_FLAVOUR_PHYSICAL,
 				       dp->index, false, 0);
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d (pre-dsa_user_parse) \n",__FUNCTION__,__LINE__);
 		err = dsa_user_parse(dp, dp->index, ds);
 		if (err)
 			return err;
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d (pre-dsa_slave_create) \n",__FUNCTION__,__LINE__);
 		err = dsa_slave_create(dp);
 		if (err)
 			dev_err(ds->dev, "failed to create slave for port %d.%d\n",
@@ -382,7 +372,6 @@ static int dsa_switch_setup(struct dsa_switch *ds)
 {
 	int err;
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	/* Initialize ds->phys_mii_mask before registering the slave MDIO bus
 	 * driver and before ops->setup() has run, since the switch drivers and
 	 * the slave MDIO bus driver rely on these values for probing PHY
@@ -393,42 +382,34 @@ printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	/* Add the switch to devlink before calling setup, so that setup can
 	 * add dpipe tables
 	 */
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	ds->devlink = devlink_alloc(&dsa_devlink_ops, 0);
 	if (!ds->devlink)
 		return -ENOMEM;
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	err = devlink_register(ds->devlink, ds->dev);
 	if (err)
 		return err;
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	err = ds->ops->setup(ds);
 	if (err < 0)
 		return err;
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	err = dsa_switch_register_notifier(ds);
 	if (err)
 		return err;
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	if (!ds->slave_mii_bus && ds->ops->phy_read) {
 		ds->slave_mii_bus = devm_mdiobus_alloc(ds->dev);
 		if (!ds->slave_mii_bus)
 			return -ENOMEM;
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 		dsa_slave_mii_bus_init(ds);
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 		err = mdiobus_register(ds->slave_mii_bus);
 		if (err < 0)
 			return err;
 	}
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	return 0;
 }
 
@@ -453,16 +434,16 @@ static int dsa_tree_setup_switches(struct dsa_switch_tree *dst)
 	struct dsa_port *dp;
 	int device, port;
 	int err;
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
+
 	for (device = 0; device < DSA_MAX_SWITCHES; device++) {
 		ds = dst->ds[device];
 		if (!ds)
 			continue;
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
+
 		err = dsa_switch_setup(ds);
 		if (err)
 			return err;
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
+
 		for (port = 0; port < ds->num_ports; port++) {
 			dp = &ds->ports[port];
 
@@ -501,7 +482,6 @@ static int dsa_tree_setup_master(struct dsa_switch_tree *dst)
 	struct dsa_port *cpu_dp = dst->cpu_dp;
 	struct net_device *master = cpu_dp->master;
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	/* DSA currently supports a single pair of CPU port and master device */
 	return dsa_master_setup(master, cpu_dp);
 }
@@ -518,35 +498,29 @@ static int dsa_tree_setup(struct dsa_switch_tree *dst)
 {
 	bool complete;
 	int err;
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 
 	if (dst->setup) {
 		pr_err("DSA: tree %d already setup! Disjoint trees?\n",
 		       dst->index);
 		return -EEXIST;
 	}
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 
 	complete = dsa_tree_setup_routing_table(dst);
 	if (!complete)
 		return 0;
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 
 	err = dsa_tree_setup_default_cpu(dst);
 	if (err)
 		return err;
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 
 	err = dsa_tree_setup_switches(dst);
 	if (err)
 		return err;
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 
 	err = dsa_tree_setup_master(dst);
 	if (err)
 		return err;
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	dst->setup = true;
 
 	pr_info("DSA: tree %d setup\n", dst->index);
@@ -587,11 +561,9 @@ static int dsa_tree_add_switch(struct dsa_switch_tree *dst,
 
 	if (dst->ds[index])
 		return -EBUSY;
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 
 	dsa_tree_get(dst);
 	dst->ds[index] = ds;
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 
 	err = dsa_tree_setup(dst);
 	if (err)
@@ -625,7 +597,6 @@ static int dsa_port_parse_cpu(struct dsa_port *dp, struct net_device *master)
 	const struct dsa_device_ops *tag_ops;
 	enum dsa_tag_protocol tag_protocol;
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d (m:0x%x) \n",__FUNCTION__,__LINE__,(unsigned int)master);
 	tag_protocol = ds->ops->get_tag_protocol(ds, dp->index);
 	tag_ops = dsa_resolve_tag_protocol(tag_protocol);
 	if (IS_ERR(tag_ops)) {
@@ -633,14 +604,12 @@ printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d (m:0x%x) \n",__FUNCTION__,__LINE__,
 		return PTR_ERR(tag_ops);
 	}
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d (TYPE_CPU)\n",__FUNCTION__,__LINE__);
 	dp->type = DSA_PORT_TYPE_CPU;
 	dp->rcv = tag_ops->rcv;
 	dp->tag_ops = tag_ops;
 	dp->master = master;
 	dp->dst = dst;
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d (i:%d,m:0x%x)\n",__FUNCTION__,__LINE__,dp->index,(unsigned int)master);
 	dev_hold(master);
 	ds->ports[dp->index].ethernet = master;
 
@@ -649,30 +618,25 @@ printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d (i:%d,m:0x%x)\n",__FUNCTION__,__LIN
 
 static int dsa_port_parse_of(struct dsa_port *dp, struct device_node *dn)
 {
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	struct device_node *ethernet = of_parse_phandle(dn, "ethernet", 0);
 	const char *name = of_get_property(dn, "label", NULL);
 	bool link = of_property_read_bool(dn, "link");
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d (i:%d,name: %s)\n",__FUNCTION__,__LINE__,dp->index,name);
 	dp->dn = dn;
 
 	if (ethernet) {
 		struct net_device *master;
 
 		master = of_find_net_device_by_node(ethernet);
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d (master:0x%x)\n",__FUNCTION__,__LINE__,(unsigned int)master);
 		if (!master)
 			return -EPROBE_DEFER;
 
 		return dsa_port_parse_cpu(dp, master);
 	}
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	if (link)
 		return dsa_port_parse_dsa(dp);
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	return dsa_port_parse_user(dp, name);
 }
 
@@ -684,26 +648,22 @@ static int dsa_switch_parse_ports_of(struct dsa_switch *ds,
 	u32 reg;
 	int err;
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	ports = of_get_child_by_name(dn, "ports");
 	if (!ports) {
 		dev_err(ds->dev, "no ports child node found\n");
 		return -EINVAL;
 	}
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	for_each_available_child_of_node(ports, port) {
 		err = of_property_read_u32(port, "reg", &reg);
 		if (err)
 			return err;
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 		if (reg >= ds->num_ports)
 			return -EINVAL;
 
 		dp = &ds->ports[reg];
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 		err = dsa_port_parse_of(dp, port);
 		if (err)
 			return err;
@@ -718,23 +678,19 @@ static int dsa_switch_parse_member_of(struct dsa_switch *ds,
 	u32 m[2] = { 0, 0 };
 	int sz;
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	/* Don't error out if this optional property isn't found */
 	sz = of_property_read_variable_u32_array(dn, "dsa,member", m, 2, 2);
 	if (sz < 0 && sz != -EINVAL)
 		return sz;
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	ds->index = m[1];
 	if (ds->index >= DSA_MAX_SWITCHES)
 		return -EINVAL;
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	ds->dst = dsa_tree_touch(m[0]);
 	if (!ds->dst)
 		return -ENOMEM;
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	return 0;
 }
 
@@ -742,12 +698,10 @@ static int dsa_switch_parse_of(struct dsa_switch *ds, struct device_node *dn)
 {
 	int err;
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	err = dsa_switch_parse_member_of(ds, dn);
 	if (err)
 		return err;
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	return dsa_switch_parse_ports_of(ds, dn);
 }
 
@@ -757,7 +711,6 @@ static int dsa_port_parse(struct dsa_port *dp, const char *name,
 	if (!strcmp(name, "cpu")) {
 		struct net_device *master;
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 		master = dsa_dev_to_net_device(dev);
 		if (!master)
 			return -EPROBE_DEFER;
@@ -767,11 +720,9 @@ printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 		return dsa_port_parse_cpu(dp, master);
 	}
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	if (!strcmp(name, "dsa"))
 		return dsa_port_parse_dsa(dp);
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	return dsa_port_parse_user(dp, name);
 }
 
@@ -785,7 +736,6 @@ static int dsa_switch_parse_ports(struct dsa_switch *ds,
 	unsigned int i;
 	int err;
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	for (i = 0; i < DSA_MAX_PORTS; i++) {
 		name = cd->port_names[i];
 		dev = cd->netdev[i];
@@ -801,7 +751,6 @@ printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 		valid_name_found = true;
 	}
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	if (!valid_name_found && i == DSA_MAX_PORTS)
 		return -EINVAL;
 
@@ -812,7 +761,6 @@ static int dsa_switch_parse(struct dsa_switch *ds, struct dsa_chip_data *cd)
 {
 	ds->cd = cd;
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	/* We don't support interconnected switches nor multiple trees via
 	 * platform data, so this is the unique switch of the tree.
 	 */
@@ -821,7 +769,6 @@ printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	if (!ds->dst)
 		return -ENOMEM;
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	return dsa_switch_parse_ports(ds, cd);
 }
 
@@ -829,7 +776,6 @@ static int dsa_switch_add(struct dsa_switch *ds)
 {
 	struct dsa_switch_tree *dst = ds->dst;
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	return dsa_tree_add_switch(dst, ds);
 }
 
@@ -838,7 +784,6 @@ static int dsa_switch_probe(struct dsa_switch *ds)
 	struct dsa_chip_data *pdata = ds->dev->platform_data;
 	struct device_node *np = ds->dev->of_node;
 	int err;
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 
 	if (np)
 		err = dsa_switch_parse_of(ds, np);
@@ -847,10 +792,8 @@ printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	else
 		err = -ENODEV;
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	if (err)
 		return err;
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 
 	return dsa_switch_add(ds);
 }
@@ -861,7 +804,6 @@ struct dsa_switch *dsa_switch_alloc(struct device *dev, size_t n)
 	struct dsa_switch *ds;
 	int i;
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	ds = devm_kzalloc(dev, size, GFP_KERNEL);
 	if (!ds)
 		return NULL;
@@ -880,7 +822,6 @@ printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 			return NULL;
 	}
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	ds->dev = dev;
 	ds->num_ports = n;
 
@@ -889,7 +830,6 @@ printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 		ds->ports[i].ds = ds;
 	}
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	return ds;
 }
 EXPORT_SYMBOL_GPL(dsa_switch_alloc);
@@ -898,13 +838,10 @@ int dsa_register_switch(struct dsa_switch *ds)
 {
 	int err;
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	mutex_lock(&dsa2_mutex);
 	err = dsa_switch_probe(ds);
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	dsa_tree_put(ds->dst);
 	mutex_unlock(&dsa2_mutex);
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 
 	return err;
 }
@@ -915,7 +852,6 @@ static void dsa_switch_remove(struct dsa_switch *ds)
 	struct dsa_switch_tree *dst = ds->dst;
 	unsigned int index = ds->index;
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	dsa_tree_remove_switch(dst, index);
 }
 
