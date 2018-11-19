@@ -350,7 +350,6 @@ static void dsa_port_teardown(struct dsa_port *dp)
 	case DSA_PORT_TYPE_UNUSED:
 		break;
 	case DSA_PORT_TYPE_CPU:
-	case DSA_PORT_TYPE_DSA:
 		dsa_port_link_unregister_of(dp);
 		if (dp->master)
 			dp->master->dsa_ptr = NULL;
@@ -358,6 +357,9 @@ static void dsa_port_teardown(struct dsa_port *dp)
 			dev_put(dp->ethernet);
 			dp->ethernet = NULL;
 		}
+		break;
+	case DSA_PORT_TYPE_DSA:
+		dsa_port_link_unregister_of(dp);
 		break;
 	case DSA_PORT_TYPE_USER:
 		if (dp->slave) {
