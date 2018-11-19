@@ -624,7 +624,7 @@ static int dsa_port_parse_cpu(struct dsa_port *dp, struct net_device *master)
 	const struct dsa_device_ops *tag_ops;
 	enum dsa_tag_protocol tag_protocol;
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
+printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d (m:0x%x) \n",__FUNCTION__,__LINE__,(unsigned int)master);
 	tag_protocol = ds->ops->get_tag_protocol(ds, dp->index);
 	tag_ops = dsa_resolve_tag_protocol(tag_protocol);
 	if (IS_ERR(tag_ops)) {
@@ -632,13 +632,14 @@ printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 		return PTR_ERR(tag_ops);
 	}
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
+printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d (TYPE_CPU)\n",__FUNCTION__,__LINE__);
 	dp->type = DSA_PORT_TYPE_CPU;
 	dp->rcv = tag_ops->rcv;
 	dp->tag_ops = tag_ops;
 	dp->master = master;
 	dp->dst = dst;
 
+printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d (i:%d,m:0x%x)\n",__FUNCTION__,__LINE__,dp->index,(unsigned int)master);
 	dev_hold(master);
 	ds->ports[dp->index].ethernet = master;
 
@@ -652,14 +653,14 @@ printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	const char *name = of_get_property(dn, "label", NULL);
 	bool link = of_property_read_bool(dn, "link");
 
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
+printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d (i:%d,name: %s)\n",__FUNCTION__,__LINE__,dp->index,name);
 	dp->dn = dn;
 
 	if (ethernet) {
 		struct net_device *master;
 
 		master = of_find_net_device_by_node(ethernet);
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
+printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d (master:0x%x)\n",__FUNCTION__,__LINE__,(unsigned int)master);
 		if (!master)
 			return -EPROBE_DEFER;
 

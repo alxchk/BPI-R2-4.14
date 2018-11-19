@@ -1,1 +1,5 @@
 <stdin>:1332:2: warning: #warning syscall io_pgetevents not implemented [-Wcpp]
+net/dsa/slave.c: In function 'dsa_slave_create':
+net/dsa/slave.c:1302:2: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+  struct net_device *master = ds->ports[port->upstream].ethernet;
+  ^~~~~~
