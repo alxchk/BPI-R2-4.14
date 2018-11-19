@@ -1345,8 +1345,8 @@ static const struct dsa_switch_ops mt7530_switch_ops = {
 };
 
 static int
-//mt7530_probe(struct platform_device *mdiodev)
-mt7530_probe(struct mdio_device *mdiodev)
+mt7530_probe(struct platform_device *mdiodev)
+//mt7530_probe(struct mdio_device *mdiodev)
 {
 	struct mt7530_priv *priv;
 	struct device_node *dn, *mdio;
@@ -1412,9 +1412,9 @@ printk(KERN_ALERT "DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
 	return dsa_register_switch(priv->ds);
 }
 
-static void//int
-//mt7530_remove(struct platform_device *mdiodev)
-mt7530_remove(struct mdio_device *mdiodev)
+static int //void
+mt7530_remove(struct platform_device *mdiodev)
+//mt7530_remove(struct mdio_device *mdiodev)
 {
 	struct mt7530_priv *priv = dev_get_drvdata(&mdiodev->dev);
 	int ret = 0;
@@ -1432,7 +1432,7 @@ mt7530_remove(struct mdio_device *mdiodev)
 	dsa_unregister_switch(priv->ds);
 	mutex_destroy(&priv->reg_mutex);
 
-	//return 0;
+	return 0;
 }
 
 static const struct of_device_id mt7530_of_match[] = {
@@ -1441,25 +1441,25 @@ static const struct of_device_id mt7530_of_match[] = {
 };
 MODULE_DEVICE_TABLE(of, mt7530_of_match);
 
-/*static struct platform_driver mtk_mt7530_driver = {
+static struct platform_driver mtk_mt7530_driver = {
 	.probe  = mt7530_probe,
 	.remove = mt7530_remove,
 	.driver = {
 		.name = "mt7530",
 		.of_match_table = mt7530_of_match,
 	},
-};*/
-static struct mdio_driver mt7530_mdio_driver = {
+};
+/*static struct mdio_driver mt7530_mdio_driver = {
 	.probe  = mt7530_probe,
 	.remove = mt7530_remove,
 	.mdiodrv.driver = {
 		.name = "mt7530",
 		.of_match_table = mt7530_of_match,
 	},
-};
+};*/
 
-//module_platform_driver(mtk_mt7530_driver);
-mdio_module_driver(mt7530_mdio_driver);
+module_platform_driver(mtk_mt7530_driver);
+//mdio_module_driver(mt7530_mdio_driver);
 
 MODULE_AUTHOR("Sean Wang <sean.wang@mediatek.com>");
 MODULE_DESCRIPTION("Driver for Mediatek MT7530 Switch");
