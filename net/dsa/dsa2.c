@@ -332,17 +332,18 @@ printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d (DSA_PORT_TYPE_USER) \n",__FUNCTION
 		devlink_port_attrs_set(&dp->devlink_port,
 				       DEVLINK_PORT_FLAVOUR_PHYSICAL,
 				       dp->index, false, 0);
+printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d (pre-dsa_user_parse) \n",__FUNCTION__,__LINE__);
+		err = dsa_user_parse(dp, dp->index, ds);
+		if (err)
+			return err;
+
+printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d (pre-dsa_slave_create) \n",__FUNCTION__,__LINE__);
 		err = dsa_slave_create(dp);
 		if (err)
 			dev_err(ds->dev, "failed to create slave for port %d.%d\n",
 				ds->index, dp->index);
 		else
 			devlink_port_type_eth_set(&dp->devlink_port, dp->slave);
-
-printk(KERN_ALERT "[DSA] DEBUG: Passed %s %d (pre-dsa_user_parse) \n",__FUNCTION__,__LINE__);
-		err = dsa_user_parse(dp, dp->index, ds);
-		if (err)
-			return err;
 
 		break;
 	}
