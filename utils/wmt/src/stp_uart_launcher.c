@@ -71,7 +71,7 @@
 
 #define CUST_COMBO_WMT_DEV "/dev/stpwmt"
 #define CUST_COMBO_STP_DEV "/dev/ttyMT2" //-- for ALPS
-#define CUST_COMBO_PATCH_PATH "/etc/firmware" //-- for ALPS
+#define CUST_COMBO_PATCH_PATH "/lib/firmware/mediatek/" //-- for ALPS
 
 
 #define CUST_BAUDRATE_DFT (115200)

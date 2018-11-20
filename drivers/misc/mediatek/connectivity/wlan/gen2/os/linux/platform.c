@@ -121,8 +121,8 @@
 *                              C O N S T A N T S
 ********************************************************************************
 */
-#define WIFI_NVRAM_FILE_NAME   "/etc/firmware/nvram/WIFI"
-#define WIFI_NVRAM_CUSTOM_NAME "/etc/firmware/nvram/WIFI_CUSTOM"
+#define WIFI_NVRAM_FILE_NAME   "/lib/firmware/mediatek/nvram/WIFI"
+#define WIFI_NVRAM_CUSTOM_NAME "/lib/firmware/mediatek/nvram/WIFI_CUSTOM"
 
 /*******************************************************************************
 *                             D A T A   T Y P E S

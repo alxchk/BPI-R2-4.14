@@ -1333,7 +1333,7 @@ VOID nicCmdEventQueryMemDump(IN P_ADAPTER_T prAdapter, IN P_CMD_INFO_T prCmdInfo
 			 * path /sdcard/dump_<current  system tick>_<memory address>_<memory length>.hex
 			 */
 			u4CurTimeTick = kalGetTimeTick();
-			sprintf(aucPath, "/sdcard/dump_%d_0x%08X_%d.hex",
+			sprintf(aucPath, "/tmp/dump_%d_0x%08X_%d.hex",
 				u4CurTimeTick,
 				prEventDumpMem->u4Address, prEventDumpMem->u4Length + prEventDumpMem->u4RemainLength);
 			kalWriteToFile(aucPath, FALSE, &prEventDumpMem->aucBuffer[0], prEventDumpMem->u4Length);
