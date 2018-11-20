@@ -1,0 +1,6 @@
+Package: banana-image-4.14
+Architecture: armhf
+Section: kernel
+Description: Bananapi R2 packaged kernel
+Version: 4.14
+Maintainer: Oleksii Shevchuk <alxchk@gmail.com>
