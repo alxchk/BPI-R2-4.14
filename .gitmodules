@@ -1,0 +1,15 @@
+[submodule "OOT/cryptodev-linux"]
+	path = OOT/cryptodev-linux
+	url = https://github.com/cryptodev-linux/cryptodev-linux
+[submodule "OOT/WireGuard"]
+	path = OOT/WireGuard
+	url = https://git.zx2c4.com/WireGuard
+[submodule "OOT/libmnl"]
+	path = OOT/libmnl
+	url = git://git.netfilter.org/libmnl
+[submodule "OOT/af_alg"]
+	path = OOT/af_alg
+	url = https://github.com/sarnold/af_alg.git
+[submodule "OOT/exfat-nofuse"]
+	path = OOT/exfat-nofuse
+	url = https://github.com/dorimanx/exfat-nofuse
