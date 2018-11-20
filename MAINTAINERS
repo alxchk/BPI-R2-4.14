@@ -9923,6 +9923,13 @@ S:	Supported
 F:	drivers/gpu/drm/mxsfb/
 F:	Documentation/devicetree/bindings/display/mxsfb.txt
 
+MYLEX DAC960 PCI RAID Controller
+M:	Hannes Reinecke <hare@kernel.org>
+L:	linux-scsi@vger.kernel.org
+S:	Supported
+F:	drivers/scsi/myrb.*
+F:	drivers/scsi/myrs.*
+
 MYRICOM MYRI-10G 10GbE DRIVER (MYRI10GE)
 M:	Chris Lee <christopher.lee@cspi.com>
 L:	netdev@vger.kernel.org
@@ -15385,6 +15392,15 @@ F:	arch/x86/um/
 F:	fs/hostfs/
 F:	fs/hppfs/
 
+<<<<<<< HEAD
+=======
+USERSPACE COPYIN/COPYOUT (UIOVEC)
+M:	Alexander Viro <viro@zeniv.linux.org.uk>
+S:	Maintained
+F:	lib/iov_iter.c
+F:	include/linux/uio.h
+
+>>>>>>> parent of 53b3b6bbfde6... Merge tag 'drm-next-2018-10-24' of git://anongit.freedesktop.org/drm/drm
 USERSPACE I/O (UIO)
 M:	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 S:	Maintained
