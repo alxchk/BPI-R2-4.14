@@ -6,8 +6,6 @@ SELF=`readlink -f "$0"`
 OOT=`dirname "$SELF"`
 KDIR=`readlink -f "$OOT/../"`
 
-KVER=`make -sC "$KDIR" kernelrelease`
-
 OPENSSL_DEBIAN_1_0_VER=${OPENSSL_DEBIAN_1_0_VER:-"1.0.2l-2+deb9u3"}
 OPENSSL_DEBIAN_1_1_VER=${OPENSSL_DEBIAN_1_1_VER:-"1.1.0f-3+deb9u2"}
 
@@ -26,7 +24,7 @@ CC=${CROSS_COMPILE}gcc
 
 echo "{ CHOST: ${CHOST} }"
 
-KMAKE_VARS="${KMAKE_VARS} INSTALL_MOD_PATH=${DIST} CROSS_COMPILE=${CROSS_COMPILE}"
+KMAKE_VARS="${KMAKE_VARS} INSTALL_MOD_PATH=${DIST} ARCH=arm CROSS_COMPILE=${CROSS_COMPILE}"
 KMAKE_VARS="${KMAKE_VARS} INSTALL_HDR_PATH=${DIST}/usr/src/linux"
 
 KMAKE="make ${KMAKE_VARS} -C ${KDIR}"
@@ -35,6 +33,10 @@ if [ ! -f ${KDIR}/.config ]; then
     echo "[+] Copy default config"
     cp -vf ${OOT}/bananapi_r2_config ${KDIR}/.config
 fi
+
+${KMAKE} oldconfig
+
+KVER=`${KMAKE} -sC "$KDIR" kernelrelease`
 
 echo "BUILD: $KVER to $DIST (DIST)"
 rm -rf ${DIST}
@@ -64,15 +66,17 @@ echo "[+] Install headers"
 ${KMAKE} headers_install
 
 echo "[+] Fix symlinks"
-rm -f ${DIST}/lib/modules/$KVER/{build,source}
-ln -s ../../../usr/src/linux ${DIST}/lib/modules/$KVER/build
-ln -s ../../../usr/src/linux ${DIST}/lib/modules/$KVER/source
+rm -f "${DIST}/lib/modules/$KVER/build"
+rm -f "${DIST}/lib/modules/$KVER/source"
+
+ln -s ../../../usr/src/linux "${DIST}/lib/modules/$KVER/build"
+ln -s ../../../usr/src/linux "${DIST}/lib/modules/$KVER/source"
 
 echo "{ BUILD OOT MODULES & TOOLS }"
 
 echo "[+] Build cryptodev"
-make -C ${OOT}/cryptodev-linux KERNEL_DIR=${KDIR}
-make -C ${OOT}/cryptodev-linux KERNEL_DIR=${KDIR} DESTDIR=${DIST} prefix=/usr \
+${KMAKE} -C ${OOT}/cryptodev-linux KERNEL_DIR=${KDIR}
+${KMAKE} -C ${OOT}/cryptodev-linux KERNEL_DIR=${KDIR} DESTDIR=${DIST} prefix=/usr \
     MAKE="make INSTALL_MOD_PATH=${DIST}" install
 
 echo "[+] Build libmnl (wireguard wg dep)"
