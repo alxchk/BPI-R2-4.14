@@ -488,13 +488,19 @@ static int mtk_crypto_probe(struct platform_device *pdev)
 	struct mtk_cryp *cryp;
 	int i, err;
 
+	dev_info(&pdev->dev, "MTK crypto probe\n");
+
 	cryp = devm_kzalloc(&pdev->dev, sizeof(*cryp), GFP_KERNEL);
-	if (!cryp)
+	if (!cryp) {
+		dev_err(&pdev->dev, "KZAlloc failed\n");
 		return -ENOMEM;
+	}
 
 	cryp->base = devm_ioremap_resource(&pdev->dev, res);
-	if (IS_ERR(cryp->base))
+	if (IS_ERR(cryp->base)) {
+		dev_err(&pdev->dev, "IO remap failed\n");
 		return PTR_ERR(cryp->base);
+	}
 
 	for (i = 0; i < MTK_IRQ_NUM; i++) {
 		cryp->irq[i] = platform_get_irq(pdev, i);
@@ -505,16 +511,20 @@ static int mtk_crypto_probe(struct platform_device *pdev)
 	}
 
 	cryp->clk_cryp = devm_clk_get(&pdev->dev, "cryp");
-	if (IS_ERR(cryp->clk_cryp))
+	if (IS_ERR(cryp->clk_cryp)) {
+		dev_err(&pdev->dev, "CLK - defer\n");
 		return -EPROBE_DEFER;
+	}
 
 	cryp->dev = &pdev->dev;
 	pm_runtime_enable(cryp->dev);
 	pm_runtime_get_sync(cryp->dev);
 
 	err = clk_prepare_enable(cryp->clk_cryp);
-	if (err)
+	if (err) {
+		dev_err(cryp->dev, "CLK - prepare enable failed: %d\n", err);
 		goto err_clk_cryp;
+	}
 
 	/* Allocate four command/result descriptor rings */
 	err = mtk_desc_ring_alloc(cryp);
@@ -543,6 +553,7 @@ static int mtk_crypto_probe(struct platform_device *pdev)
 	}
 
 	platform_set_drvdata(pdev, cryp);
+	dev_info(cryp->dev, "MTK Crypto (platform) - done\n");
 	return 0;
 
 err_hash:
@@ -578,7 +589,7 @@ static int mtk_crypto_remove(struct platform_device *pdev)
 }
 
 static const struct of_device_id of_crypto_id[] = {
-	{ .compatible = "mediatek,eip97-crypto" },
+	{ .compatible = "mediatek,mt7623-crypto" },
 	{},
 };
 MODULE_DEVICE_TABLE(of, of_crypto_id);
