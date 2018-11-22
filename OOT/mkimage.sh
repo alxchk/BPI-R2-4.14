@@ -74,6 +74,11 @@ ln -s ../../../usr/src/linux "${DIST}/lib/modules/$KVER/source"
 
 echo "{ BUILD OOT MODULES & TOOLS }"
 
+echo "[+] Build AUFS4"
+AUFS4_DIR=${OOT}/aufs4-standalone
+make -C ${AUFS4_DIR} KDIR=${KDIR} ${KMAKE_VARS} DESTDIR=${DIST} aufs.ko
+make -C ${AUFS4_DIR} KDIR=${KDIR} ${KMAKE_VARS} DESTDIR=${DIST} install
+
 echo "[+] Build cryptodev"
 ${KMAKE} -C ${OOT}/cryptodev-linux KERNEL_DIR=${KDIR}
 ${KMAKE} -C ${OOT}/cryptodev-linux KERNEL_DIR=${KDIR} DESTDIR=${DIST} prefix=/usr \
