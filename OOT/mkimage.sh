@@ -7,13 +7,8 @@ OOT=`dirname "$SELF"`
 KDIR=`readlink -f "$OOT/../"`
 
 OPENSSL_DEBIAN_1_0_VER=${OPENSSL_DEBIAN_1_0_VER:-"1.0.2l-2+deb9u3"}
-OPENSSL_DEBIAN_1_1_VER=${OPENSSL_DEBIAN_1_1_VER:-"1.1.0f-3+deb9u2"}
-
 OPENSSL_DEBIAN_1_0_URL="http://ftp.us.debian.org/debian/pool/main/o/openssl1.0/libssl1.0.2_${OPENSSL_DEBIAN_1_0_VER}_armel.deb"
-OPENSSL_DEBIAN_1_1_URL="http://ftp.us.debian.org/debian/pool/main/o/openssl/libssl1.1_${OPENSSL_DEBIAN_1_1_VER}_armel.deb"
-
 OPENSSL_DEBIAN_1_0_DEV_URL="http://ftp.us.debian.org/debian/pool/main/o/openssl1.0/libssl1.0-dev_${OPENSSL_DEBIAN_1_0_VER}_armel.deb"
-OPENSSL_DEBIAN_1_1_DEV_URL="http://ftp.us.debian.org/debian/pool/main/o/openssl/libssl-dev_${OPENSSL_DEBIAN_1_1_VER}_armel.deb"
 
 DIST=${DIST:-../../bananapi-image}
 DIST=`readlink -f "$DIST"`
@@ -127,14 +122,6 @@ if [ ! -d openssl_dist ]; then
 
     dpkg -x openssl_dist/openssl1_0.deb openssl_dist/root1_0
     dpkg -x openssl_dist/openssl-dev1_0.deb openssl_dist/root1_0
-    
-    echo "[D] Download openssl 1.1.x libs (${OPENSSL_DEBIAN_1_1_URL})"
-    wget "${OPENSSL_DEBIAN_1_1_URL}" -O openssl_dist/openssl1_1.deb
-    echo "[D] Download openssl 1.1.x headers (${OPENSSL_DEBIAN_1_1_DEV_URL})"
-    wget "${OPENSSL_DEBIAN_1_1_DEV_URL}" -O openssl_dist/openssl-dev1_1.deb
-
-    dpkg -x openssl_dist/openssl1_1.deb openssl_dist/root1_1
-    dpkg -x openssl_dist/openssl-dev1_1.deb openssl_dist/root1_1
 fi
 
 OPENSSL_1_0_ROOT=`readlink -f openssl_dist/root1_0`
@@ -143,18 +130,8 @@ OPENSSL_1_0_LIBS="${OPENSSL_1_0_ROOT}/usr/lib/arm-linux-gnueabi/libcrypto.so.1.0
 OPENSSL_1_0_ENGINES=${DIST}/usr/lib/arm-linux-gnueabihf/openssl-1.0.2/engines
 OPENSSL_1_0_ENGINE=libafalg.so
 
-OPENSSL_1_1_ROOT=`readlink -f openssl_dist/root1_1`
-OPENSSL_1_1_CFLAGS="-I${OPENSSL_1_1_ROOT}/usr/include -I${OPENSSL_1_1_ROOT}/usr/include/arm-linux-gnueabi"
-OPENSSL_1_1_LIBS="${OPENSSL_1_1_ROOT}/usr/lib/arm-linux-gnueabi/libcrypto.so.1.1"
-OPENSSL_1_1_ENGINES=${DIST}/usr/lib/arm-linux-gnueabihf/engines-1.1
-OPENSSL_1_1_ENGINE=afalg.so
-
 if [ ! -d ${OPENSSL_1_0_ENGINES} ]; then
     mkdir -p ${OPENSSL_1_0_ENGINES}
-fi
-
-if [ ! -d ${OPENSSL_1_1_ENGINES} ]; then
-    mkdir -p ${OPENSSL_1_1_ENGINES}
 fi
 
 set -x
@@ -164,14 +141,6 @@ ${CC} -O2 -pipe -shared -o ${OPENSSL_1_0_ENGINES}/${OPENSSL_1_0_ENGINE} \
     -I${DIST}/usr/src/linux/include \
     ${OPENSSL_1_0_CFLAGS} ${OPENSSL_1_0_LIBS} \
     -Wl,-no-undefined -Wl,-soname,${OPENSSL_1_0_ENGINE}
-
-cd ${OOT}/af_alg_1_1
-
-${CC} -O2 -pipe -shared -o ${OPENSSL_1_1_ENGINES}/${OPENSSL_1_1_ENGINE} \
-    e_afalg.c e_afalg_err.c \
-    -I${DIST}/usr/src/linux/include \
-    ${OPENSSL_1_1_CFLAGS} ${OPENSSL_1_1_LIBS} \
-    -Wl,-no-undefined -Wl,-soname,${OPENSSL_1_1_ENGINE}
 
 cd -
 
