@@ -83,8 +83,12 @@ EXPORT_SYMBOL(percpu_counter_set);
 void percpu_counter_add_batch(struct percpu_counter *fbc, s64 amount, s32 batch)
 {
 	s64 count;
-
+	
 	preempt_disable();
+
+	if (unlikely(!fbc) || unlikely(!fbc->counters))
+		goto out;
+
 	count = __this_cpu_read(*fbc->counters) + amount;
 	if (count >= batch || count <= -batch) {
 		unsigned long flags;
@@ -95,6 +99,8 @@ void percpu_counter_add_batch(struct percpu_counter *fbc, s64 amount, s32 batch)
 	} else {
 		this_cpu_add(*fbc->counters, amount);
 	}
+
+out:
 	preempt_enable();
 }
 EXPORT_SYMBOL(percpu_counter_add_batch);
