@@ -6,7 +6,7 @@ SELF=`readlink -f "$0"`
 OOT=`dirname "$SELF"`
 KDIR=`readlink -f "$OOT/../"`
 
-OPENSSL_DEBIAN_1_0_VER=${OPENSSL_DEBIAN_1_0_VER:-"1.0.2l-2+deb9u3"}
+OPENSSL_DEBIAN_1_0_VER=${OPENSSL_DEBIAN_1_0_VER:-"1.0.2s-1~deb9u1"}
 OPENSSL_DEBIAN_1_0_URL="http://ftp.us.debian.org/debian/pool/main/o/openssl1.0/libssl1.0.2_${OPENSSL_DEBIAN_1_0_VER}_armel.deb"
 OPENSSL_DEBIAN_1_0_DEV_URL="http://ftp.us.debian.org/debian/pool/main/o/openssl1.0/libssl1.0-dev_${OPENSSL_DEBIAN_1_0_VER}_armel.deb"
 
