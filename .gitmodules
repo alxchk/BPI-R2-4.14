@@ -12,7 +12,7 @@
 	url = https://github.com/sarnold/af_alg.git
 [submodule "OOT/exfat-nofuse"]
 	path = OOT/exfat-nofuse
-	url = https://github.com/dorimanx/exfat-nofuse
+	url = https://github.com/ian-abbott/exfat-nofuse
 [submodule "OOT/aufs4-standalone"]
 	path = OOT/aufs4-standalone
 	url = https://github.com/sfjro/aufs4-standalone.git
