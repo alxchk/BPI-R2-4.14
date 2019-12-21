@@ -271,10 +271,14 @@ static int mtk_rtc_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, rtc);
 
-	ret = devm_request_threaded_irq(&pdev->dev, rtc->irq, NULL,
-					mtk_rtc_irq_handler_thread,
-					IRQF_ONESHOT | IRQF_TRIGGER_HIGH,
-					"mt6397-rtc", rtc);
+	rtc->rtc_dev = devm_rtc_allocate_device(rtc->dev);
+	if (IS_ERR(rtc->rtc_dev))
+		return PTR_ERR(rtc->rtc_dev);
+
+	ret = request_threaded_irq(rtc->irq, NULL,
+				   mtk_rtc_irq_handler_thread,
+				   IRQF_ONESHOT | IRQF_TRIGGER_HIGH,
+				   "mt6397-rtc", rtc);
 	if (ret) {
 		dev_err(&pdev->dev, "Failed to request alarm IRQ: %d: %d\n",
 			rtc->irq, ret);
@@ -283,13 +287,25 @@ static int mtk_rtc_probe(struct platform_device *pdev)
 
 	device_init_wakeup(&pdev->dev, 1);
 
-	rtc->rtc_dev = devm_rtc_allocate_device(&pdev->dev);
-	if (IS_ERR(rtc->rtc_dev))
-		return PTR_ERR(rtc->rtc_dev);
-
 	rtc->rtc_dev->ops = &mtk_rtc_ops;
 
-	return rtc_register_device(rtc->rtc_dev);
+	ret = rtc_register_device(rtc->rtc_dev);
+	if (ret) {
+		dev_err(&pdev->dev, "register rtc device failed\n");
+		goto out_free_irq;
+	}
+
+	return 0;
+}
+
+static int mtk_rtc_remove(struct platform_device *pdev)
+{
+	struct mt6397_rtc *rtc = platform_get_drvdata(pdev);
+
+	free_irq(rtc->irq, rtc->rtc_dev);
+	irq_dispose_mapping(rtc->irq);
+
+	return 0;
 }
 
 #ifdef CONFIG_PM_SLEEP

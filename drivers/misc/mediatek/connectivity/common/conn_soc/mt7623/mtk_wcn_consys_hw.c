@@ -36,6 +36,7 @@
 #endif
 
 #include <linux/regulator/consumer.h>
+#include <linux/pinctrl/consumer.h>
 #ifdef CONFIG_MTK_HIBERNATION
 #include <mtk_hibernate_dpm.h>
 #endif
